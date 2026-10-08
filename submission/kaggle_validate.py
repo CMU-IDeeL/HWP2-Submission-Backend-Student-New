@@ -100,34 +100,57 @@ def _submissions_for_user(
     competition: str,
     username: str,
 ) -> List:
-    """Fetch all submissions for the authenticated account."""
+    """Fetch all submissions using token-based pagination."""
     submissions = []
-    page_number = 1
+    page_token = ""
+    seen_tokens = set()
 
     try:
-        while True:
-            batch = list(
-                api.competition_submissions(
-                    competition,
-                    page_number=page_number,
-                    page_size=20,
-                ) or []
-            )
+        from kagglesdk.competitions.types.competition_api_service import (
+            ApiListSubmissionsRequest,
+        )
+        from kagglesdk.competitions.types.competition_enums import (
+            SubmissionGroup,
+            SubmissionSortBy,
+        )
 
-            if not batch:
-                break
+        with api.build_kaggle_client() as client:
+            while True:
+                request = ApiListSubmissionsRequest()
+                request.competition_name = competition
+                request.page_token = page_token
+                request.page_size = 20
+                request.group = SubmissionGroup.SUBMISSION_GROUP_ALL
+                request.sort_by = SubmissionSortBy.SUBMISSION_SORT_BY_DATE
 
-            submissions.extend(batch)
-            page_number += 1
+                response = (
+                    client.competitions.competition_api_client
+                    .list_submissions(request)
+                )
+
+                submissions.extend(response.submissions or [])
+
+                next_token = response.next_page_token
+                if not next_token:
+                    break
+
+                if next_token in seen_tokens:
+                    raise RuntimeError(
+                        "Kaggle returned a repeated pagination token."
+                    )
+
+                seen_tokens.add(next_token)
+                page_token = next_token
 
     except Exception as exc:
         raise KaggleValidationError(
             f"Unable to retrieve submissions for competition "
             f"'{competition}'.\n"
-            "Check competition access and your connection, then retry."
+            "Check the underlying error before retrying."
         ) from exc
 
     return submissions
+
 
 def _as_float(value: Any) -> float | None:
     if value is None:
