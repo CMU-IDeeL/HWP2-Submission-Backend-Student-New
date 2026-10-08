@@ -606,11 +606,11 @@ def build_wandb_selection(
         ]
 
         if required_run not in normalized_override:
-            raise KaggleValidationError(
-                "FINAL_WANDB_RUNS_OVERRIDE must include the "
-                "W&B run associated with your top-ranked Kaggle "
-                "submission:\n"
-                f"  {required_run}"
+            log.info(
+                "Note: Your override does not include the W&B run "
+                "associated with your best Kaggle submission: %s. "
+                "Continuing with your selected runs.",
+                required_run,
             )
 
         candidate_by_path = {
