@@ -4,6 +4,8 @@ import logging
 from typing import Any, Dict, List
 import wandb
 from wandb.errors import AuthenticationError, CommError
+from wandb.old.summary import SummarySubDict
+import pickle
 
 log = logging.getLogger(__name__)
 
@@ -90,6 +92,24 @@ def export_wandb_runs(
 ###############################################################################
 # Helpers
 ###############################################################################
+def _plain_summary(value):
+    """Convert nested W&B summary objects to ordinary containers."""
+    if isinstance(value, SummarySubDict):
+        value = dict(value)
+
+    if isinstance(value, dict):
+        return {
+            key: _plain_summary(item)
+            for key, item in value.items()
+        }
+
+    if isinstance(value, list):
+        return [_plain_summary(item) for item in value]
+
+    if isinstance(value, tuple):
+        return tuple(_plain_summary(item) for item in value)
+
+    return value
 
 def _serialize_run(run: Any) -> Dict[str, Any]:
     """
@@ -101,7 +121,7 @@ def _serialize_run(run: Any) -> Dict[str, Any]:
         "state": run.state,
         "created_at": str(run.created_at),
         "config": dict(run.config),
-        "summary": dict(run.summary),
+        "summary": _plain_summary(dict(run.summary)),
         "tags": list(run.tags),
     }
 
@@ -115,5 +135,15 @@ def _serialize_run(run: Any) -> Dict[str, Any]:
             "error": str(exc),
             "message": "History could not be retrieved for this run.",
         }
+
+    record = _plain_summary(record)
+
+    try:
+        pickle.dumps(record)
+    except Exception as exc:
+        raise WandBExportError(
+            f"W&B run '{run.id}' contains data that cannot be saved. "
+            "Check the underlying serialization error."
+        ) from exc
 
     return record
