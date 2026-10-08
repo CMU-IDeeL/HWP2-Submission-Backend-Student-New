@@ -1,0 +1,9 @@
+{
+    "param_limit": 20000000,
+    "main_competition_name": "11785-hw-3-p-2-utterance-to-phoneme-mapping-spring-2026",
+    "slack_competition_name": "11785-hw-3-p-2-utterance-to-phoneme-mapping-s-26-slack",
+    "submission_zip": "HW3P2_final_submission.zip",
+    "max_wandb_runs": 10,
+    "wandb_tracking_tag": "HW3P2",
+    "kaggle_score_mode": "min"
+}
