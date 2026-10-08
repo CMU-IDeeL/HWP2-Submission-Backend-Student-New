@@ -221,11 +221,11 @@ def _serialize_submission(
     """Convert a Kaggle submission into serializable metadata."""
 
     private_score = _as_float(
-        getattr(submission, "privateScore", None)
+        getattr(submission, "private_score", None)
     )
 
     public_score = _as_float(
-        getattr(submission, "publicScore", None)
+        getattr(submission, "public_score", None)
     )
 
     # Prefer the official private score when Kaggle exposes it.
