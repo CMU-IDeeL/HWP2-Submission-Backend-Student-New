@@ -1,5 +1,5 @@
 {
-    "param_limit": 20000000,
+    "param_limit": 30000000,
     "main_competition_name": "f-26-hw-3-p-2-student-competition",
     "slack_competition_name": "f-26-hw-3-p-2-student-competition-slack",
     "submission_zip": "HW3P2_final_submission.zip",
