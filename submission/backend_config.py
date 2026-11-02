@@ -26,6 +26,8 @@ class BackendConfig:
         }
     )
 
+    required_evidence_archive: str | None = None
+
     # ------------------------------------------------------------------
     # Model metadata
     # ------------------------------------------------------------------
@@ -116,8 +118,8 @@ class BackendConfig:
             "max",
         }:
             raise ValueError("kaggle_score_mode must be 'min' or 'max'")
-
-    
+        
+       
     def to_dict(self) -> dict[str, object]:
         """
         Convert the BackendConfig to a dictionary.
@@ -137,6 +139,7 @@ class BackendConfig:
             "slack_competition_name": self.slack_competition_name,
             "kaggle_output_json": self.kaggle_output_json,
             "submission_zip": self.submission_zip,
+            "required_evidence_archive": self.required_evidence_archive,
         }
         
     
@@ -162,6 +165,7 @@ class BackendConfig:
             slack_competition_name=data["slack_competition_name"],
             kaggle_output_json=data.get("kaggle_output_json", "kaggle_metadata.json"),
             submission_zip=data.get("submission_zip", "handin.zip"),
+            required_evidence_archive=data.get("required_evidence_archive"),
         )
     
 

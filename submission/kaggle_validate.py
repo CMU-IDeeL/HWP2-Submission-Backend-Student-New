@@ -208,6 +208,8 @@ def parse_wandb_run_path(description: str | None, expected_tag: str) -> str | No
 
     if len(parts) != 3 or not all(parts):
         return None
+    if parts[2].casefold() == "paste_run_id_here":
+        return None
 
     return run_path
 

@@ -1,6 +1,11 @@
 {
-    "param_limit": 30000000,
-    "main_competition_name": "11785-hw-4-p-2-asr-with-transformer-spring-2026",
-    "slack_competition_name": "11785-hw-4-p-2-asr-with-transformer-spring-2026-slack",
+    "param_limit": 60000000,
+    "main_competition_name": "TODO",
+    "slack_competition_name": "TODO",
+    "max_wandb_runs": 10,
+    "wandb_tracking_tag": "HW4P2",
+    "kaggle_score_mode": "max",
+    "kaggle_output_json": "kaggle_data.json",
+    "required_evidence_archive": "hw4p2_code_evidence.zip",
     "submission_zip": "HW4P2_final_submission.zip"
 }

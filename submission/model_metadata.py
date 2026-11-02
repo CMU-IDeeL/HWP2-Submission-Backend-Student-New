@@ -41,7 +41,7 @@ def build_model_metadata(model: nn.Module | nnx.Module, param_limit: int) -> Dic
 
     Args:
         model (nn.Module | nnx.Module): The model to inspect
-        param_limit (int): Maximum allowed number of trainable parameters
+        param_limit (int): Maximum allowed number of total model parameters
     Returns:
         Dict[str, Any]: Model metadata
     """
@@ -67,12 +67,6 @@ def build_model_metadata(model: nn.Module | nnx.Module, param_limit: int) -> Dic
 
         total_params = sum(p.numel() for p in parameters)
         trainable_count = sum(p.numel() for p in trainable_params)
-
-        if trainable_count > param_limit:
-            raise ModelMetadataError(
-                f"Model exceeds parameter limit of {param_limit}.\n"
-                "👉 Reduce model size or complexity."
-            )
 
         framework_info = {
             "backend_name": "torch",
@@ -103,12 +97,6 @@ def build_model_metadata(model: nn.Module | nnx.Module, param_limit: int) -> Dic
         total_params = sum(int(leaf.size) for leaf in param_leaves)
         trainable_count = total_params
 
-        if trainable_count > param_limit:
-            raise ModelMetadataError(
-                f"Model exceeds parameter limit of {param_limit}.\n"
-                "👉 Reduce model size or complexity."
-            )
-
         framework_info = {
             "backend_name": "jax",
             "jax_version": jax.__version__,
@@ -122,8 +110,15 @@ def build_model_metadata(model: nn.Module | nnx.Module, param_limit: int) -> Dic
             "👉 Expected a torch.nn.Module or flax.nnx.Module instance."
         )
 
+    if total_params >= param_limit:
+        raise ModelMetadataError(
+            f"Model has {total_params:,} total parameters, "
+            f"exceeding the limit of {param_limit:,}."
+        )
+    
     metadata: Dict[str, Any] = {
         "schema_version": "1.0",
+        "parameter_count": total_params,
 
         "model": {
             "class_name": model.__class__.__name__,

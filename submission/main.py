@@ -92,6 +92,17 @@ def create_submission_zip(cfg: SubmissionConfig, backend_cfg: BackendConfig) -> 
     for f in cfg.additional_files:
         _validate_file_exists(f, "Additional file")
 
+    if backend_cfg.required_evidence_archive is not None:
+        from submission.evidence_validate import validate_evidence_archive
+
+        try:
+            validate_evidence_archive(
+                additional_files=cfg.additional_files,
+                required_archive=backend_cfg.required_evidence_archive,
+            )
+        except ValueError as exc:
+            raise SubmissionError(str(exc)) from exc
+
     _banner("BUILDING MODEL METADATA")
 
     try:
