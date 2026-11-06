@@ -1,7 +1,7 @@
 {
     "param_limit": 60000000,
-    "main_competition_name": "TODO",
-    "slack_competition_name": "TODO",
+    "main_competition_name": "hw-4-p-2-student-competition-fall26",
+    "slack_competition_name": "hw-4-p-2-student-slack-competition-fall-2026",
     "max_wandb_runs": 10,
     "wandb_tracking_tag": "HW4P2",
     "kaggle_score_mode": "max",
